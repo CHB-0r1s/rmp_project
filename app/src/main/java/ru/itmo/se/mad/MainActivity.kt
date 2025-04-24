@@ -33,7 +33,7 @@ fun Main() {
     Column(Modifier.padding(top = 10.dp)) {
         NavHost(navController, startDestination = NavRoutes.AddItem.route) {
             composable(NavRoutes.AddItem.route) { AddItem(navController) }
-            composable(NavRoutes.FoodTimeChoiceWidget.route) { FoodTimeChoiceWidget()  }
+            composable(NavRoutes.FoodTimeChoiceWidget.route) { FoodTimeChoiceWidget() }
         }
     }
 }
