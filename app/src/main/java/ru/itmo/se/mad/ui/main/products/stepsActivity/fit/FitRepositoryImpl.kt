@@ -1,40 +1,18 @@
 package ru.itmo.se.mad.ui.main.products.stepsActivity.fit
 
-import android.content.Context
-import com.google.android.gms.fitness.FitnessOptions
+import retrofit2.Call
 
 
 class FitRepositoryImpl(private val fitApiService: FitApiService) : FitRepository {
-
-    override fun hasPermissions(context: Context): Boolean {
-        return fitApiService.hasPermissions(context)
+    override fun getSteps(): Call<FitApiService.StepsResponse> {
+        return fitApiService.activityApi.getSteps()
     }
 
-    override fun getFitnessOptions(): FitnessOptions {
-        return fitApiService.getFitnessOptions()
+    override fun setDailyGoal(goal: FitApiService.GoalRequest): Call<Void> {
+        return fitApiService.activityApi.setDailyGoal(goal)
     }
 
-    override suspend fun getDailyStepCount(context: Context): List<ActivityData> {
-        return fitApiService.getDailyStepCount(context)
-    }
-
-    override suspend fun getStepCount(context: Context, startTime: Long, endTime: Long): List<ActivityData> {
-        return fitApiService.getStepCount(context, startTime, endTime)
-    }
-
-    override suspend fun getUserInfo(context: Context): UserInfo {
-        return fitApiService.getUserInfo(context)
+    override fun setSteps(stepsData: FitApiService.StepsRequest): Call<Void> {
+        return fitApiService.activityApi.setSteps(stepsData)
     }
 }
-
-data class UserInfo(
-    val id: String,
-    val email: String,
-    val name: String
-)
-
-data class ActivityData(
-    val startTime: Long,
-    val endTime: Long,
-    val steps: Int
-)

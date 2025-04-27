@@ -1,268 +1,107 @@
 package ru.itmo.se.mad.ui.main.products.stepsActivity.fit
 
-import android.content.Context
 import android.util.Log
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.fitness.Fitness
-import com.google.android.gms.fitness.FitnessOptions
-import com.google.android.gms.fitness.data.DataType
-import com.google.android.gms.fitness.data.Field
-import com.google.android.gms.fitness.request.DataReadRequest
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import java.util.Calendar
-import java.util.concurrent.TimeUnit
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import okhttp3.OkHttpClient
 
 
 class FitApiService {
-    private val TAG = "FitApiService"
+    private val token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJodHRwOi8vMC4wLjAuMDo1MDAwIiwiaXNzIjoiaHR0cDovLzAuMC4wLjA6NTAwMCIsInVzZXJuYW1lIjoidXNlciJ9.PXFU57PS94Da36MEVmnbSUIdo9UrJuRCP496Bipn8a0"
 
-    private val fitnessOptions = FitnessOptions.builder()
-        .addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
-        .addDataType(DataType.TYPE_STEP_COUNT_CUMULATIVE, FitnessOptions.ACCESS_READ)
-        .addDataType(DataType.AGGREGATE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
+    data class StepsResponse(
+        val steps: Int,
+        val goal: Int
+    )
+
+    data class GoalRequest(
+        val goal: Int
+    )
+
+    data class StepsRequest(
+        val steps: Int
+    )
+
+    val okHttpClient = OkHttpClient.Builder()
+        .addInterceptor { chain ->
+            val original = chain.request()
+            val requestBuilder = original.newBuilder()
+                .header("Authorization", "Bearer $token")
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .method(original.method(), original.body())
+            
+            chain.proceed(requestBuilder.build())
+        }
         .build()
 
-    fun hasPermissions(context: Context): Boolean {
-        val account = GoogleSignIn.getLastSignedInAccount(context)
-        return account != null && GoogleSignIn.hasPermissions(account, fitnessOptions)
-    }
+    val retrofit = Retrofit.Builder()
+        .baseUrl("http://10.0.2.2:5013")
+        .client(okHttpClient)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
 
-    fun getFitnessOptions(): FitnessOptions {
-        return fitnessOptions
-    }
+    val activityApi = retrofit.create(FitRepository::class.java)
 
-    suspend fun getDailyStepCount(context: Context): List<ActivityData> = withContext(Dispatchers.IO) {
+    suspend fun getUserSteps(): Int = withContext(Dispatchers.IO) {
+        val call = activityApi.getSteps()
+        var steps = 0
+        
         try {
-
-            val account = GoogleSignIn.getLastSignedInAccount(context)
-                ?: throw Exception("Not signed in to Google Account")
-
-            val endTime = System.currentTimeMillis()
-            val calendar = Calendar.getInstance()
-            calendar.timeInMillis = endTime
-            calendar.set(Calendar.HOUR_OF_DAY, 0)
-            calendar.set(Calendar.MINUTE, 0)
-            calendar.set(Calendar.SECOND, 0)
-            calendar.set(Calendar.MILLISECOND, 0)
-            val startTime = calendar.timeInMillis
-
-
-            try {
-                val historyData = getStepHistoryData(context, account, startTime, endTime)
-                if (historyData.isNotEmpty() && historyData[0].steps > 0) {
-                    return@withContext historyData
-                }
-            } catch (e: Exception) {
-                throw e;
+            val response = call.execute()
+            if (response.isSuccessful && response.body() != null) {
+                steps = response.body()!!.steps
             }
-
-            val sessionData = getSessionStepData(context, account, startTime, endTime)
-            if (sessionData.isNotEmpty() && sessionData[0].steps > 0) {
-                return@withContext sessionData
-            }
-
-            try {
-                val sensorData = getSensorStepData(context, account)
-                if (sensorData > 0) {
-                    return@withContext listOf(ActivityData(startTime, endTime, sensorData))
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error reading from Sensors API", e)
-            }
-
-            val lastResortData = getAnyStepData(context, account, startTime, endTime)
-            if (lastResortData.isNotEmpty()) {
-                return@withContext lastResortData
-            }
-
-            return@withContext listOf(ActivityData(startTime, endTime, 0))
-
         } catch (e: Exception) {
-            throw e
+            Log.e("FitApiService", "Error getting steps", e)
         }
+        
+        steps
     }
 
-    private suspend fun getStepHistoryData(
-        context: Context,
-        account: GoogleSignInAccount,
-        startTime: Long,
-        endTime: Long
-    ): List<ActivityData> {
-        val dataRequest = DataReadRequest.Builder()
-            .aggregate(DataType.TYPE_STEP_COUNT_DELTA, DataType.AGGREGATE_STEP_COUNT_DELTA)
-            .bucketByTime(1, TimeUnit.DAYS)
-            .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
-            .build()
-
-        val response = Fitness.getHistoryClient(context, account)
-            .readData(dataRequest)
-            .await()
-
-        val activityDataList = mutableListOf<ActivityData>()
-
-        var totalSteps = 0
-
-        response.buckets.flatMap { bucket ->
-            bucket.dataSets
-        }.forEach { dataSet ->
-            dataSet.dataPoints.forEach { point ->
-                val steps = point.getValue(Field.FIELD_STEPS).asInt()
-
-                totalSteps += steps
-            }
-        }
-
-        activityDataList.add(
-            ActivityData(
-                startTime = startTime,
-                endTime = endTime,
-                steps = totalSteps
-            )
-        )
-
-        return activityDataList
-    }
-
-    private suspend fun getSessionStepData(
-        context: Context,
-        account: GoogleSignInAccount,
-        startTime: Long,
-        endTime: Long
-    ): List<ActivityData> {
+    suspend fun setDailyGoal(goal: Int): Boolean = withContext(Dispatchers.IO) {
+        val call = activityApi.setDailyGoal(GoalRequest(goal))
+        
         try {
-            val dataSet = Fitness.getHistoryClient(context, account)
-                .readData(
-                    DataReadRequest.Builder()
-                        .read(DataType.TYPE_STEP_COUNT_DELTA)
-                        .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
-                        .build()
-                )
-                .await()
-
-
-            var totalSteps = 0
-
-            dataSet.dataSets.forEach { ds ->
-                ds.dataPoints.forEach { point ->
-                    val steps = point.getValue(Field.FIELD_STEPS).asInt()
-                    totalSteps += steps
-                }
-            }
-
-            return listOf(ActivityData(startTime, endTime, totalSteps))
+            val response = call.execute()
+            response.isSuccessful
         } catch (e: Exception) {
-            return emptyList()
+            Log.e("FitApiService", "Error setting daily goal", e)
+            false
         }
     }
 
-    private suspend fun getSensorStepData(
-        context: Context,
-        account: GoogleSignInAccount
-    ): Int {
+    suspend fun setSteps(steps: Int): Boolean = withContext(Dispatchers.IO) {
+        val call = activityApi.setSteps(StepsRequest(steps))
+        
         try {
-            val total = Fitness.getHistoryClient(context, account)
-                .readDailyTotal(DataType.TYPE_STEP_COUNT_DELTA)
-                .await()
-
-            var stepCount = 0
-            if (total.dataPoints.isNotEmpty()) {
-                stepCount = total.dataPoints[0].getValue(Field.FIELD_STEPS).asInt()
-            }
-
-            return stepCount
+            val response = call.execute()
+            response.isSuccessful
         } catch (e: Exception) {
-            return 0
+            Log.e("FitApiService", "Error setting steps", e)
+            false
         }
     }
 
-    private suspend fun getAnyStepData(
-        context: Context,
-        account: GoogleSignInAccount,
-        startTime: Long,
-        endTime: Long
-    ): List<ActivityData> {
+    suspend fun getUserStepsAndGoal(): Pair<Int, Int> = withContext(Dispatchers.IO) {
+        val call = activityApi.getSteps()
+        var steps = 0
+        var goal = 5000 // Default goal
+        
         try {
-            val total = Fitness.getHistoryClient(context, account)
-                .readDailyTotal(DataType.TYPE_STEP_COUNT_DELTA)
-                .await()
-
-            var stepCount = 0
-            if (total.dataPoints.isNotEmpty()) {
-                stepCount = total.dataPoints[0].getValue(Field.FIELD_STEPS).asInt()
-                return listOf(ActivityData(startTime, endTime, stepCount))
+            val response = call.execute()
+            if (response.isSuccessful && response.body() != null) {
+                steps = response.body()!!.steps
+                goal = response.body()!!.goal
+                Log.v("getUserStepsAndGoal", response.toString())
             }
-
-            return emptyList()
+            Log.v("getUserStepsAndGoal", response.toString())
         } catch (e: Exception) {
-            return emptyList()
+            Log.e("FitApiService", "Error getting steps and goal", e)
         }
-    }
-
-    suspend fun getStepCount(context: Context, startTime: Long, endTime: Long): List<ActivityData> =
-        withContext(Dispatchers.IO) {
-            try {
-                val account = GoogleSignIn.getLastSignedInAccount(context)
-                    ?: throw Exception("Not signed in to Google Account")
-
-                val dataRequest = DataReadRequest.Builder()
-                    .aggregate(DataType.TYPE_STEP_COUNT_DELTA, DataType.AGGREGATE_STEP_COUNT_DELTA)
-                    .bucketByTime(1, TimeUnit.DAYS)
-                    .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
-                    .build()
-
-                val response = Fitness.getHistoryClient(context, account)
-                    .readData(dataRequest)
-                    .await()
-
-                val activityDataList = mutableListOf<ActivityData>()
-
-                response.buckets.forEach { bucket ->
-                    var dailySteps = 0
-                    bucket.dataSets.forEach { dataSet ->
-                        dataSet.dataPoints.forEach { point ->
-                            val steps = point.getValue(Field.FIELD_STEPS).asInt()
-                            dailySteps += steps
-                        }
-                    }
-
-                    if (dailySteps > 0) {
-                        activityDataList.add(
-                            ActivityData(
-                                startTime = bucket.getStartTime(TimeUnit.MILLISECONDS),
-                                endTime = bucket.getEndTime(TimeUnit.MILLISECONDS),
-                                steps = dailySteps
-                            )
-                        )
-                    }
-                }
-
-                if (activityDataList.isEmpty()) {
-                    activityDataList.add(ActivityData(startTime, endTime, 0))
-                }
-
-                activityDataList
-            } catch (e: Exception) {
-                Log.e(TAG, "Error getting step count", e)
-                throw e
-            }
-        }
-
-    suspend fun getUserInfo(context: Context): UserInfo = withContext(Dispatchers.IO) {
-        try {
-            val account = GoogleSignIn.getLastSignedInAccount(context)
-                ?: throw Exception("Not signed in to Google Account")
-
-            UserInfo(
-                id = account.id ?: "",
-                email = account.email ?: "",
-                name = account.displayName ?: ""
-            )
-        } catch (e: Exception) {
-            Log.e(TAG, "Error getting user info", e)
-            throw e
-        }
+        
+        Pair(steps, goal)
     }
 }

@@ -1,16 +1,17 @@
 package ru.itmo.se.mad.ui.main.products.stepsActivity.fit
 
-import android.content.Context
+import retrofit2.Call
+import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.Body
 
 interface FitRepository {
+    @GET("activity/steps")
+    fun getSteps(): Call<FitApiService.StepsResponse>
+    
+    @POST("activity/set-steps")
+    fun setDailyGoal(@Body goal: FitApiService.GoalRequest): Call<Void>
 
-    fun hasPermissions(context: Context): Boolean
-
-    fun getFitnessOptions(): Any
-
-    suspend fun getDailyStepCount(context: Context): List<ActivityData>
-
-    suspend fun getStepCount(context: Context, startTime: Long, endTime: Long): List<ActivityData>
-
-    suspend fun getUserInfo(context: Context): UserInfo
+    @POST("activity/set-steps")
+    fun setSteps(@Body stepsData: FitApiService.StepsRequest): Call<Void>
 }

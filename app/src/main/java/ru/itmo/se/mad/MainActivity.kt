@@ -15,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ru.itmo.se.mad.ui.main.products.AddItem
 import ru.itmo.se.mad.ui.main.products.FoodTimeChoiceWidget
+import ru.itmo.se.mad.ui.main.products.stepsActivity.StepsActivityWidget
 import ru.itmo.se.mad.ui.theme.MyApplicationTheme
 
 class MainActivity : ComponentActivity() {
