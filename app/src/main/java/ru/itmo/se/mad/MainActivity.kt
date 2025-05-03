@@ -42,6 +42,7 @@ sealed class NavRoutes(val route: String) {
     data object FoodTimeChoiceWidget : NavRoutes("FoodTimeChoiceWidget")
     data object AddItem : NavRoutes("AddItem")
     data object AchievementDetails : NavRoutes("AchievementDetails")
+    data object MeasureWidget : NavRoutes("MeasureWidget")
 }
 
 @Composable

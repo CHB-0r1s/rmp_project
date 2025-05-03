@@ -42,7 +42,8 @@ import ru.itmo.se.mad.ui.theme.WidgetGray80
 //@Preview
 @Composable
 fun AddItem(navController: NavController) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally,
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .clip(shape = RoundedCornerShape(32.dp))
             .background(color = White)
@@ -56,36 +57,46 @@ fun AddItem(navController: NavController) {
                 .background(WidgetGray10)
                 .padding(5.dp)
         )
-        Row (
+        Row(
             horizontalArrangement = Arrangement.spacedBy(72.dp),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .padding(horizontal = 0.dp, vertical = 16.dp)
         ) {
-            Text("Что вы хотите добавить?", fontSize = 22.sp, fontFamily = SFProDisplay, fontWeight = FontWeight.SemiBold)
-            Button(onClick = {}, shape = CircleShape, contentPadding = PaddingValues(0.dp), colors = ButtonColors(
-                WidgetGray5, Black, White, White
-            ), modifier = Modifier
-                .size(32.dp)
+            Text(
+                "Что вы хотите добавить?",
+                fontSize = 22.sp,
+                fontFamily = SFProDisplay,
+                fontWeight = FontWeight.SemiBold
+            )
+            Button(
+                onClick = {},
+                shape = CircleShape,
+                contentPadding = PaddingValues(0.dp),
+                colors = ButtonColors(
+                    WidgetGray5, Black, White, White
+                ),
+                modifier = Modifier
+                    .size(32.dp)
             ) {
                 Icon(Icons.Filled.Close, "", tint = WidgetGray80)
             }
         }
-        Row (
+        Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.padding(vertical = 5.dp)
         ) {
-            AddItemElement(navController, "Приём пищи", R.drawable.image_utensils)
+            AddItemElement(navController, "Приём пищи", R.drawable.image_utensils, NavRoutes.FoodTimeChoiceWidget.route)
             AddItemElement(navController, "Активность", R.drawable.image_activity)
         }
-        Row (
+        Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.padding(vertical = 5.dp)
         ) {
-            AddItemElement(navController, "Измерение", R.drawable.image_ruler)
+            AddItemElement(navController, "Измерение", R.drawable.image_ruler, NavRoutes.MeasureWidget.route)
             AddItemElement(navController, "Вода", R.drawable.image_water)
         }
-        Row (
+        Row(
             horizontalArrangement = Arrangement.spacedBy(20.dp),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
@@ -98,13 +109,23 @@ fun AddItem(navController: NavController) {
                     .width(30.dp)
                     .height(30.dp)
             )
-            Text("Сканировать код", fontFamily = SFProDisplay, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+            Text(
+                "Сканировать код",
+                fontFamily = SFProDisplay,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold
+            )
         }
     }
 }
 
 @Composable
-fun AddItemElement(navController: NavController, thingType: String = "Приём пищи", imageName: Int = R.drawable.image_utensils) {
+fun AddItemElement(
+    navController: NavController,
+    thingType: String = "Приём пищи",
+    imageName: Int = R.drawable.image_utensils,
+    route: String = NavRoutes.FoodTimeChoiceWidget.route
+) {
     Column(
         modifier = Modifier
             .width(190.dp)
@@ -112,10 +133,10 @@ fun AddItemElement(navController: NavController, thingType: String = "Приём
             .clip(shape = RoundedCornerShape(16.dp))
             .background(WidgetGray5)
             .clickable(onClick = {
-                navController.navigate(NavRoutes.FoodTimeChoiceWidget.route)
+                navController.navigate(route)
             }),
         verticalArrangement = Arrangement.Center
-    ){
+    ) {
         Image(
             painter = painterResource(id = imageName),
             contentDescription = null,
