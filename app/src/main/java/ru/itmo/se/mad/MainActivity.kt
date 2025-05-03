@@ -39,8 +39,9 @@ fun Main() {
 }
 
 sealed class NavRoutes(val route: String) {
-    object FoodTimeChoiceWidget : NavRoutes("FoodTimeChoiceWidget")
-    object AddItem : NavRoutes("AddItem")
+    data object FoodTimeChoiceWidget : NavRoutes("FoodTimeChoiceWidget")
+    data object AddItem : NavRoutes("AddItem")
+    data object AchievementDetails : NavRoutes("AchievementDetails")
 }
 
 @Composable
