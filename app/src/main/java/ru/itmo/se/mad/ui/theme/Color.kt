@@ -21,10 +21,7 @@ val BackgroundGray53 = Color(0xFF535353)
 
 val White = Color(0xFFFFFFFF)
 val Black = Color(0xFF000000)
-val Gray = Color.Gray
 val Red = Color(0xFFFF2D55)
-val Beige = Color(0xFFFFE5BF)
-val Orange = Color(0xFFFF9500)
 
 val CalorieGreen = Color(0xFF00E30B)
 val CalorieGreenMenu = Color(0xFF52D500)

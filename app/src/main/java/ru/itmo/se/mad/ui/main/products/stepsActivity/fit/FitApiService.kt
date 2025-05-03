@@ -88,7 +88,7 @@ class FitApiService {
     suspend fun getUserStepsAndGoal(): Pair<Int, Int> = withContext(Dispatchers.IO) {
         val call = activityApi.getSteps()
         var steps = 0
-        var goal = 5000 // Default goal
+        var goal = 5000
         
         try {
             val response = call.execute()

@@ -31,11 +31,12 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Main() {
     val navController = rememberNavController()
-    Column(Modifier.padding(top = 10.dp)) {
-        NavHost(navController, startDestination = NavRoutes.AddItem.route) {
-            composable(NavRoutes.AddItem.route) { AddItem(navController) }
-            composable(NavRoutes.FoodTimeChoiceWidget.route) { FoodTimeChoiceWidget() }
-        }
+    Column(Modifier.padding(top = 50.dp, bottom = 10.dp,  start = 10.dp, end = 10.dp)) {
+        StepsActivityWidget();
+//        NavHost(navController, startDestination = NavRoutes.AddItem.route) {
+//            composable(NavRoutes.AddItem.route) { AddItem(navController) }
+//            composable(NavRoutes.FoodTimeChoiceWidget.route) { FoodTimeChoiceWidget() }
+//        }
     }
 }
 

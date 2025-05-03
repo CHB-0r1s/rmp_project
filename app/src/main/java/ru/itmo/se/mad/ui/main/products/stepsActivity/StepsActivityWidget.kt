@@ -5,15 +5,14 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
@@ -26,6 +25,7 @@ import ru.itmo.se.mad.ui.main.products.stepsActivity.fit.FitApiService
 import kotlinx.coroutines.launch
 import ru.itmo.se.mad.ui.theme.*
 import androidx.compose.ui.text.TextStyle
+import ru.itmo.se.mad.R
 
 @Composable
 fun StepsActivityWidget(
@@ -43,7 +43,6 @@ fun StepsActivityWidget(
     var currentSteps by remember { mutableStateOf(steps) }
     val scope = rememberCoroutineScope()
     
-    // Function to refresh steps data from API
     suspend fun refreshStepsData() {
         scope.launch {
             try {
@@ -58,7 +57,6 @@ fun StepsActivityWidget(
         }
     }
     
-    // Load steps from API
     LaunchedEffect(Unit) {
         refreshStepsData()
     }
@@ -66,8 +64,8 @@ fun StepsActivityWidget(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        colors = CardDefaults.cardColors(containerColor = WidgetGray5),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
             modifier = Modifier
@@ -80,34 +78,25 @@ fun StepsActivityWidget(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    "Активность",style = TextStyle(
+                    "Активность", style = TextStyle(
                         fontFamily = SFProDisplay,
                         fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.SemiBold,
                         fontStyle = FontStyle.Normal
                     )
                 )
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Favorite,
-                        contentDescription = "Favorite",
-                        tint = Red,
-                        modifier = Modifier.size(20.dp)
-                    )
-
-                    IconButton(onClick = { menuExpanded = true }) {
+                Box {
+                    IconButton(
+                        onClick = { menuExpanded = true },
+                        modifier = Modifier.size(24.dp)
+                    ) {
                         Icon(
-                            imageVector = Icons.Default.MoreVert,
+                            painter = painterResource(R.drawable.more_horiz_24px),
                             contentDescription = "More options",
-                            tint = Gray,
+                            tint = BackgroundGray4560,
                             modifier = Modifier.size(24.dp)
                         )
                     }
-
                     DropdownMenu(
                         expanded = menuExpanded,
                         onDismissRequest = { menuExpanded = false }
@@ -118,13 +107,12 @@ fun StepsActivityWidget(
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 fontStyle = FontStyle.Normal
-                                ))},
+                            ))},
                             onClick = {
                                 menuExpanded = false
                                 showGoalDialog = true
                             }
                         )
-                        
                         DropdownMenuItem(
                             text = { Text("Установить количество шагов", style = TextStyle(
                                 fontFamily = SFProDisplay,
@@ -141,46 +129,58 @@ fun StepsActivityWidget(
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(
-                        style = SpanStyle(
-                            fontFamily = SFProDisplay,
-                            fontSize = 32.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Black
-                        )
-                    ) {
-                        append(String.format("%,d", currentSteps))
+            Row (
+                modifier = Modifier.fillMaxWidth().padding(0.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                fontFamily = SFProDisplay,
+                                fontSize = 34.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Black
+                            )
+                        ) {
+                            append(String.format("%,d", currentSteps))
+                        }
+                        withStyle(
+                            style = SpanStyle(
+                                fontFamily = SFProDisplay,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = BackgroundGray53
+                            )
+                        ) {
+                            append(" /" + String.format("%,d", currentDailyGoal) + " шагов")
+                        }
                     }
-                    withStyle(
-                        style = SpanStyle(
-                            fontFamily = SFProDisplay,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Normal,
-                            color = Gray
-                        )
-                    ) {
-                        append(" /$currentDailyGoal шагов")
-                    }
-                }
-            )
+                )
+                Icon(
+                    painter = painterResource(R.drawable.image_google_fit),
+                    contentDescription = "Favorite",
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(30.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Canvas(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(8.dp)
+                    .height(16.dp)
             ) {
                 val width = size.width
                 val height = size.height
-                val cornerRadius = CornerRadius(height / 2, height / 2)
+                val cornerRadius = CornerRadius(height / 3, height / 3)
 
                 drawRoundRect(
-                    color = Beige,
+                    color = ActivityOrange15,
                     size = Size(width, height),
                     cornerRadius = cornerRadius
                 )
@@ -188,7 +188,7 @@ fun StepsActivityWidget(
                 val progress = (currentSteps / currentDailyGoal.toFloat()).coerceIn(0f, 1f)
                 if (progress > 0f) {
                     drawRoundRect(
-                        color = Orange,
+                        color = ActivityOrange85,
                         size = Size(width * progress, height),
                         cornerRadius = cornerRadius
                     )
@@ -197,16 +197,15 @@ fun StepsActivityWidget(
         }
     }
     
-    // Daily goal dialog
     if (showGoalDialog) {
         AlertDialog(
             onDismissRequest = { showGoalDialog = false },
-            title = { Text("Set Daily Goal") },
+            title = { Text("Установить цель шагов") },
             text = {
                 OutlinedTextField(
                     value = goalInputValue,
                     onValueChange = { goalInputValue = it.filter { char -> char.isDigit() } },
-                    label = { Text("Steps") },
+                    label = { Text("Количество шагов") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
             },
@@ -221,35 +220,33 @@ fun StepsActivityWidget(
                                     refreshStepsData()
                                 }
                             } catch (e: Exception) {
-                                Log.e("StepsActivityWidget", "Error setting goal", e)
                             }
                         }
                         showGoalDialog = false
                     }
                 ) {
-                    Text("Save")
+                    Text("Сохранить")
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { showGoalDialog = false }
                 ) {
-                    Text("Cancel")
+                    Text("Отмена")
                 }
             }
         )
     }
     
-    // Steps dialog
     if (showStepsDialog) {
         AlertDialog(
             onDismissRequest = { showStepsDialog = false },
-            title = { Text("Set Steps") },
+            title = { Text("Установить количество шагов") },
             text = {
                 OutlinedTextField(
                     value = stepsInputValue,
                     onValueChange = { stepsInputValue = it.filter { char -> char.isDigit() } },
-                    label = { Text("Steps") },
+                    label = { Text("Количество шагов") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
             },
@@ -270,14 +267,14 @@ fun StepsActivityWidget(
                         showStepsDialog = false
                     }
                 ) {
-                    Text("Save")
+                    Text("Сохранить")
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { showStepsDialog = false }
                 ) {
-                    Text("Cancel")
+                    Text("Отмена")
                 }
             }
         )
