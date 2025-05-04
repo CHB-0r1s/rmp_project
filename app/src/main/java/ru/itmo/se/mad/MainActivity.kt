@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ru.itmo.se.mad.ui.main.measure.MeasureWidget
 import ru.itmo.se.mad.ui.main.products.AddItem
 import ru.itmo.se.mad.ui.main.products.FoodTimeChoiceWidget
 import ru.itmo.se.mad.ui.main.water.MainScreen
@@ -42,6 +43,7 @@ fun Main() {
                     MainScreen()
                 }
             ) }
+            composable(NavRoutes.MeasureWidget.route) { MeasureWidget()  }
         }
     }
 }
@@ -50,6 +52,7 @@ sealed class NavRoutes(val route: String) {
     object FoodTimeChoiceWidget : NavRoutes("FoodTimeChoiceWidget")
     object AddItem : NavRoutes("AddItem")
     object AddWaterWidget : NavRoutes("AddWaterWidget")
+    object MeasureWidget : NavRoutes("MeasureWidget")
 }
 
 @Composable
