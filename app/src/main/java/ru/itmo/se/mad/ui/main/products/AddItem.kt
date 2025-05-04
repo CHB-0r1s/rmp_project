@@ -39,7 +39,7 @@ import ru.itmo.se.mad.ui.theme.WidgetGray10
 import ru.itmo.se.mad.ui.theme.WidgetGray5
 import ru.itmo.se.mad.ui.theme.WidgetGray80
 
-//@Preview
+
 @Composable
 fun AddItem(navController: NavController) {
     Column(horizontalAlignment = Alignment.CenterHorizontally,

@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import ru.itmo.se.mad.ui.theme.WaterTrackerTheme
 import androidx.compose.foundation.clickable
 import ru.itmo.se.mad.R
+import ru.itmo.se.mad.ui.theme.SFProDisplay
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -113,7 +114,6 @@ fun ExpandCollapseButton(isExpanded: Boolean, onClick: () -> Unit, modifier: Mod
     }
 }
 
-// ------WaterCard ------
 @Composable
 fun WaterCard(
     totalWater: Float,
@@ -142,10 +142,21 @@ fun WaterCard(
                     text = "%.2f".format(totalWater),
                     fontSize = 28.sp,
                     color = Color.White,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = SFProDisplay
                 )
-                Text("/${maxWater} л", fontSize = 28.sp, color = Color.White)
-                Text("В том числе\n из еды: 0.3 л", fontSize = 14.sp, color = Color.White)
+                Text("/${maxWater} л",
+                    fontSize = 28.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = SFProDisplay
+                )
+                Text("В том числе\n из еды: 0.3 л",
+                    fontSize = 14.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.Normal,
+                    fontFamily = SFProDisplay
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -176,8 +187,7 @@ fun WaterCard(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Divider(color = Color.White.copy(alpha = 0.3f), thickness = 1.dp)
-
+            HorizontalDivider(color = Color.White.copy(alpha = 0.3f), thickness = 1.dp)
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(
@@ -186,9 +196,12 @@ fun WaterCard(
                     .clickable { /* Add custom volume */ },
                 horizontalArrangement = Arrangement.Start
             ) {
-                // Text("+", fontSize = 24.sp, color = Color.White)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("+ Другой объём", fontSize = 16.sp, color = Color.White)
+                Text("+ Другой объём",
+                    fontSize = 16.sp,
+                    color = Color.White,
+                    fontFamily = SFProDisplay
+                    )
             }
         }
 
@@ -220,12 +233,18 @@ fun WaterItem(label: String, volume: String, onClick: () -> Unit) {
             )
         }
         Spacer(modifier = Modifier.height(4.dp))
-        Text(label, color = Color.White)
-        Text(volume, color = Color.White.copy(alpha = 0.8f), fontSize = 12.sp)
+        Text(label,
+            color = Color.White,
+            fontFamily = SFProDisplay
+        )
+        Text(volume,
+            color = Color.White.copy(alpha = 0.8f),
+            fontSize = 12.sp,
+            fontFamily = SFProDisplay
+        )
     }
 }
 
-// ------  WaterSlider ------
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WaterSlider(
@@ -333,7 +352,8 @@ fun WaterSlider(
                             Text(
                                 text = "Проведите,\nчтобы добавить",
                                 fontSize = 16.sp,
-                                color = Color.White
+                                color = Color.White,
+                                fontFamily = SFProDisplay
                             )
                         }
                     }
@@ -353,7 +373,9 @@ fun WaterSlider(
                                     fontWeight = FontWeight.Bold,
                                     color = Color.White,
                                     modifier = Modifier.fillMaxWidth(),
-                                    textAlign = TextAlign.End
+                                    textAlign = TextAlign.End,
+                                    fontFamily = SFProDisplay
+
                                 )
                                 Text(
                                     text = "Отпустите, чтобы добавить",
@@ -362,7 +384,8 @@ fun WaterSlider(
                                     modifier = Modifier.fillMaxWidth(),
                                     lineHeight = 16.sp,
                                     maxLines = 2,
-                                    textAlign = TextAlign.End
+                                    textAlign = TextAlign.End,
+                                    fontFamily = SFProDisplay
                                 )
                             }
                         } else {
@@ -371,14 +394,17 @@ fun WaterSlider(
                                     painter = painterResource(id = R.drawable.baseline_arrow_forward_ios_24),
                                     contentDescription = null,
                                     tint = Color.White,
-                                    modifier = Modifier.size(16.dp)
+                                    modifier = Modifier.size(16.dp),
+
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
                                     text = "%.1f/%.2f л".format(totalWater, maxWater),
                                     fontSize = 24.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color.White
+                                    color = Color.White,
+                                    fontFamily = SFProDisplay
+
                                 )
                             }
                         }
