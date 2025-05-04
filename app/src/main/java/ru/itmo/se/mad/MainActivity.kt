@@ -15,6 +15,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ru.itmo.se.mad.ui.main.products.AddItem
 import ru.itmo.se.mad.ui.main.products.FoodTimeChoiceWidget
+import ru.itmo.se.mad.ui.main.water.MainScreen
+import ru.itmo.se.mad.ui.theme.AddWaterWidget
 import ru.itmo.se.mad.ui.theme.MyApplicationTheme
 
 class MainActivity : ComponentActivity() {
@@ -34,6 +36,12 @@ fun Main() {
         NavHost(navController, startDestination = NavRoutes.AddItem.route) {
             composable(NavRoutes.AddItem.route) { AddItem(navController) }
             composable(NavRoutes.FoodTimeChoiceWidget.route) { FoodTimeChoiceWidget()  }
+            composable(NavRoutes.AddWaterWidget.route) { AddWaterWidget(
+                darkTheme = false,
+                content = {
+                    MainScreen()
+                }
+            ) }
         }
     }
 }
@@ -41,6 +49,7 @@ fun Main() {
 sealed class NavRoutes(val route: String) {
     object FoodTimeChoiceWidget : NavRoutes("FoodTimeChoiceWidget")
     object AddItem : NavRoutes("AddItem")
+    object AddWaterWidget : NavRoutes("AddWaterWidget")
 }
 
 @Composable

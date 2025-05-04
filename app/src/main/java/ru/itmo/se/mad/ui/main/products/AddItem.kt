@@ -105,6 +105,7 @@ fun AddItem(navController: NavController) {
 
 @Composable
 fun AddItemElement(navController: NavController, thingType: String = "Приём пищи", imageName: Int = R.drawable.image_utensils) {
+
     Column(
         modifier = Modifier
             .width(190.dp)
@@ -112,7 +113,11 @@ fun AddItemElement(navController: NavController, thingType: String = "Приём
             .clip(shape = RoundedCornerShape(16.dp))
             .background(WidgetGray5)
             .clickable(onClick = {
-                navController.navigate(NavRoutes.FoodTimeChoiceWidget.route)
+                when (thingType) {
+                    "Приём пищи" -> navController.navigate(NavRoutes.FoodTimeChoiceWidget.route)
+                    "Вода" -> navController.navigate(NavRoutes.AddWaterWidget.route)
+                    // добавь другие if/when по необходимости
+                }
             }),
         verticalArrangement = Arrangement.Center
     ){
