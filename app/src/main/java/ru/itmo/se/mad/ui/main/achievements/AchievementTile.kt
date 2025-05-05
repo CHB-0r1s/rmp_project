@@ -30,7 +30,7 @@ import ru.itmo.se.mad.ui.theme.White
 import ru.itmo.se.mad.ui.theme.WidgetGray10
 
 @Composable
-fun AchievementTile(navController: NavController, title: String) {
+fun AchievementTile(navController: NavController, title: String, route: String = NavRoutes.AchievementDetails.route) {
     Column(
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -40,7 +40,7 @@ fun AchievementTile(navController: NavController, title: String) {
             .height(150.dp)
             .clickable (
                 onClick = {
-                    navController.navigate(NavRoutes.AchievementDetails.route)
+                    navController.navigate(route)
                 }
             )
     ) {
