@@ -54,3 +54,17 @@ fun MyApplicationTheme(
         content = content
     )
 }
+
+@Composable
+fun WaterTrackerTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit
+) {
+    val colors = LightColorScheme
+
+    MaterialTheme(
+        colorScheme = colors,
+        typography = Typography,
+        content = content
+    )
+}
