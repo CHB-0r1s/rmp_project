@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS user_steps (
     date DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
+
 CREATE TABLE IF NOT EXISTS products(
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
@@ -95,3 +96,14 @@ CREATE TABLE IF NOT EXISTS user_measurements (
     bp_diastolic     INTEGER          NULL,         -- Давление диастолическое (мм рт.ст.)
     measured_at      TIMESTAMP WITH TIME ZONE DEFAULT NOW()  -- дата/время замера
 );
+CREATE TABLE IF NOT EXISTS user_goals (
+                                          goal_id SERIAL PRIMARY KEY,
+                                          user_id VARCHAR(50) REFERENCES users(username),
+    goal_type VARCHAR(20) CHECK (goal_type IN ('weight_loss', 'weight_gain', 'weight_maintenance')),
+    activity_level VARCHAR(10) CHECK (activity_level IN ('low', 'medium', 'high')),
+    weekly_target NUMERIC,
+    calorie_goal INT,
+    water_goal INT,
+    steps_goal INT,
+    bju_goal VARCHAR(20) CHECK (bju_goal IN ('standard', 'custom'))
+    );

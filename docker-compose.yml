@@ -61,7 +61,7 @@ services:
     env_file:
       - .env
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - ./initdb:/docker-entrypoint-initdb.d
       - postgres_data:/var/lib/postgresql/data
@@ -71,6 +71,17 @@ services:
     container_name: service1
     expose:
       - "5001"
+
+  user_goals:
+    build: ./user_goals
+    container_name: user_goals
+    env_file:
+      - .env
+    ports:
+      - "5015:5015"
+    depends_on:
+      - db
+
 
 volumes:
   postgres_data:
