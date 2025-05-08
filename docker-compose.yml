@@ -74,7 +74,7 @@ services:
 
   user_goals:
     build: ./user_goals
-    container_name: user_goals
+    container_name: user_goals_service
     env_file:
       - .env
     ports:
