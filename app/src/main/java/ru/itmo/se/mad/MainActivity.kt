@@ -16,7 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -29,7 +28,7 @@ import ru.itmo.se.mad.ui.main.main_screen.BottomNavBar
 import ru.itmo.se.mad.ui.main.main_screen.DateItem
 import ru.itmo.se.mad.ui.main.stepsActivity.StepsActivityWidget
 import ru.itmo.se.mad.ui.main.water.MainScreen
-import ru.itmo.se.mad.ui.main.water.WaterItem
+import ru.itmo.se.mad.ui.main.calendar.CalendarScreen
 import ru.itmo.se.mad.ui.main.water.WaterSlider
 import ru.itmo.se.mad.ui.theme.AddWaterWidget
 
@@ -46,6 +45,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Main() {
+
 //    val navController = rememberNavController()
 //    Column(Modifier.padding(top = 10.dp).verticalScroll(rememberScrollState())) {
 //        NavHost(navController, startDestination = NavRoutes.AddItem.route) {
@@ -55,55 +55,61 @@ fun Main() {
 //        }
 //        CalorieWidgetView()
 //    }
-    val navController = rememberNavController()
-    var isExpanded by remember { mutableStateOf(false) }
-    var totalWater by remember { mutableStateOf(0.5f) }
-    val maxWater = 2.25f
+      val navController = rememberNavController()
+     var isExpanded by remember { mutableStateOf(false) }
+     var totalWater by remember { mutableStateOf(0.5f) }
+     val maxWater = 2.25f
+     CalendarScreen()
 
+         Scaffold(
+             bottomBar = {
+                 BottomNavBar(navController)
+             }
+         ) { padding ->
+             NavHost(
+                 navController,
+                 startDestination = "home",
+                 modifier = Modifier.padding(padding)
+             ) {
+                 composable("home") {
+                     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                         DateItem(onCalendarClick = {
+                             // TODO: когда перехожу в календарь навбар сейчас остается, и по нему можно вернуться, вроде ощущается даже нормально, я бы так и оставила
+                             navController.navigate(NavRoutes.CalendarWidget.route)
+                         })
+                         CalorieWidgetView()
+                         WaterSlider(
+                             totalWater = totalWater,
+                             onWaterAmountChange = { newAmount -> totalWater = newAmount },
+                             maxWater = maxWater,
+                             onExpandCollapseClick = { isExpanded = true },
+                             expandable = false
+                         )
+                         StepsActivityWidget()
 
-    Scaffold(
-        bottomBar = {
-            BottomNavBar(navController)
+                     }
+                 }
+                composable(NavRoutes.AddItem.route) {
+                     AddItem(navController)
+                 }
+                 composable(NavRoutes.FoodTimeChoiceWidget.route) {
+                     FoodTimeChoiceWidget()
+                 }
+                 composable("measure") {
+                     MeasureWidget()
+                 }
+                 composable(NavRoutes.CalendarWidget.route){
+                     CalendarScreen()
+                 }
+
+                 composable(NavRoutes.AddWaterWidget.route) { AddWaterWidget(
+                     darkTheme = false,
+                     content = {
+                         MainScreen()
+                     }
+                 ) }
+            }
         }
-    ) { padding ->
-        NavHost(
-            navController,
-            startDestination = "home",
-            modifier = Modifier.padding(padding)
-        ) {
-            composable("home") {
-                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                    DateItem(onCalendarClick = {
-                        // TODO: логика при нажатии на календарь
-                    })
-                    CalorieWidgetView()
-                    WaterSlider(
-                        totalWater = totalWater,
-                        onWaterAmountChange = { newAmount -> totalWater = newAmount },
-                        maxWater = maxWater,
-                        onExpandCollapseClick = { isExpanded = true },
-                        expandable = false
-                    )
-                    StepsActivityWidget()
-                }
-            }
-            composable(NavRoutes.AddItem.route) {
-                AddItem(navController)
-            }
-            composable(NavRoutes.FoodTimeChoiceWidget.route) {
-                FoodTimeChoiceWidget()
-            }
-            composable("measure") {
-                MeasureWidget()
-            }
-            composable(NavRoutes.AddWaterWidget.route) { AddWaterWidget(
-                darkTheme = false,
-                content = {
-                    MainScreen()
-                }
-            ) }
-        }
-    }
 }
 
 sealed class NavRoutes(val route: String) {
@@ -111,6 +117,7 @@ sealed class NavRoutes(val route: String) {
     data object AddItem : NavRoutes("AddItem")
     data object AddWaterWidget : NavRoutes("AddWaterWidget")
     data object MeasureWidget : NavRoutes("MeasureWidget")
+    data object CalendarWidget : NavRoutes("CalendarWidget")
 }
 
 @Composable
