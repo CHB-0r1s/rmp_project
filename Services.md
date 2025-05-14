@@ -36,7 +36,7 @@
 1. **Зарегистрируйте нового пользователя**  
    Используйте следующий запрос для регистрации нового пользователя:
     ```bash
-   curl -X POST http://localhost/auth/register -H "Content-Type: application/json" -d '{"username": "user", "password": "password"}'
+   curl -X POST http://localhost/auth/register -H "Content-Type: application/json" -d '{"username": "user", "password": "password", "name" : "Ivan"}'
    ```
 2. **Получите JWT токен**   
     После регистрации получите JWT токен с помощью следующего запроса:
