@@ -24,7 +24,9 @@ curl -X GET http://localhost/user_measurements/measurements \
 
 ```json
 {
-  "weight": 72.5,
+  "gender": "male",
+  "weight": 123.0,
+  "height": 0.0,
   "waist": 82.0,
   "hips":  90.0,
   "chest": 100.0,
@@ -40,7 +42,9 @@ curl -X GET http://localhost/user_measurements/measurements \
 
 | Поле                     | Тип        | Описание                               |
 | ------------------------ | ---------- | -------------------------------------- |
+| `gender`                 | `string`   | Пол (male, female)                     |
 | `weight`                 | `float`    | Вес (кг)                               |
+| `height`                 | `float`    | Рост (см)                               |
 | `waist`                  | `float`    | Обхват талии (см)                      |
 | `hips`                   | `float`    | Обхват бёдер (см)                      |
 | `chest`                  | `float`    | Обхват груди (см)                      |
@@ -87,7 +91,9 @@ curl -X POST http://localhost/user_measurements/update-weight \
 
 ```json
 {
-  "weight": 75.0,
+  "gender": "male",
+  "weight": 123.0,
+  "height": 0.0,
   "waist": 82.0,
   "hips": 95.0,
   "chest": 100.0,
@@ -200,6 +206,28 @@ curl -X POST http://localhost/user_measurements/update-waist \
 | ----------- | --------- | ------------------------------------ |
 | `diastolic` | `integer` | Диастолическое давление (мм рт. ст.) |
 
+#### 2.10. Обновление пола
+
+* **Метод:** `POST`
+* **URL:** `/user_measurements/update-gender`
+
+##### Тело запроса
+
+| Поле       | Тип       | Описание                            |
+| ---------- | --------- | ----------------------------------- |
+| `gender`   | `string`  | Пол (male, female)                  |
+
+#### 2.11. Обновление роста
+
+* **Метод:** `POST`
+* **URL:** `/user_measurements/update-height`
+
+##### Тело запроса
+
+| Поле       | Тип       | Описание                            |
+| ---------- | --------- | ----------------------------------- |
+| `height`   | `float`   | Рост (см)                           |
+
 > **Во всех случаях** успешный ответ — идентичный ответу из пункта 1 (полный объект MeasurementsResponse) с обновлённым полем и новым `measuredAt`.
 
 #### Возможные ошибки (для всех POST)
@@ -214,20 +242,24 @@ curl -X POST http://localhost/user_measurements/update-waist \
 
 ```kotlin
 // Запрос на обновление отдельных полей
-data class UpdateWeightRequest(val weight: Float)
-data class UpdateWaistRequest(val waist: Float)
-data class UpdateHipsRequest(val hips: Float)
-data class UpdateChestRequest(val chest: Float)
-data class UpdateArmsRequest(val arms: Float)
-data class UpdateBodyFatRequest(val bodyFat: Float)
-data class UpdateMuscleMassRequest(val muscleMass: Float)
-data class UpdateBloodGlucoseRequest(val bloodGlucose: Float)
-data class UpdateBloodPressureSystolicRequest(val systolic: Int)
-data class UpdateBloodPressureDiastolicRequest(val diastolic: Int)
+data class UpdateGenderRequest(val gender: String) // Пол
+data class UpdateWeightRequest(val weight: Float) // Вес
+data class UpdateHeightRequest(val height: Float) // Рост
+data class UpdateWaistRequest(val waist: Float) // Талия
+data class UpdateHipsRequest(val hips: Float) // Бёдра
+data class UpdateChestRequest(val chest: Float) // Грудь
+data class UpdateArmsRequest(val arms: Float) // Руки
+data class UpdateBodyFatRequest(val bodyFat: Float) // Объём жира
+data class UpdateMuscleMassRequest(val muscleMass: Float) // Мышечная масса
+data class UpdateBloodGlucoseRequest(val bloodGlucose: Float) // Глюкоза в крови
+data class UpdateBloodPressureSystolicRequest(val systolic: Int) // Давление систолическое
+data class UpdateBloodPressureDiastolicRequest(val diastolic: Int) // Давление диастолическое
 
 // Ответ со всеми замерами
 data class MeasurementsResponse(
+    val gender: String,
     val weight: Float,
+    val height: Float,
     val waist: Float,
     val hips: Float,
     val chest: Float,
@@ -237,7 +269,6 @@ data class MeasurementsResponse(
     val bloodGlucose: Float,
     val bloodPressureSystolic: Int,
     val bloodPressureDiastolic: Int,
-    val measuredAt: String,  // ISO-8601
-    val notes: String? = null
+    val measuredAt: String
 )
 ```
