@@ -10,8 +10,16 @@ class MeasurementService(private val measurementRepository: MeasurementRepositor
         return measurements
     }
 
+    fun updateGender(username: String, updateGenderRequest: UpdateGenderRequest): MeasurementsResponse {
+        return measurementRepository.updateGender(username, updateGenderRequest)
+    }
+
     fun updateWeight(username: String, updateWeightRequest: UpdateWeightRequest): MeasurementsResponse {
         return measurementRepository.updateWeight(username, updateWeightRequest)
+    }
+
+    fun updateHeight(username: String, updateHeightRequest: UpdateHeightRequest): MeasurementsResponse {
+        return measurementRepository.updateHeight(username, updateHeightRequest)
     }
 
     fun updateWaist(username: String, updateWaistRequest: UpdateWaistRequest): MeasurementsResponse {

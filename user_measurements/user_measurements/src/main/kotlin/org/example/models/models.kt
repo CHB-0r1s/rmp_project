@@ -1,6 +1,8 @@
 package org.example.models
 
+data class UpdateGenderRequest(val gender: String) // Пол
 data class UpdateWeightRequest(val weight: Float) // Вес
+data class UpdateHeightRequest(val height: Float) // Рост
 data class UpdateWaistRequest(val waist: Float) // Талия
 data class UpdateHipsRequest(val hips: Float) // Бёдра
 data class UpdateChestRequest(val chest: Float) // Грудь
@@ -13,7 +15,9 @@ data class UpdateBloodPressureDiastolicRequest(val diastolic: Int) // Давле
 
 data class ErrorResponse(val message: String)
 data class MeasurementsResponse(
+    val gender: String,
     val weight: Float,
+    val height: Float,
     val waist: Float,
     val hips: Float,
     val chest: Float,

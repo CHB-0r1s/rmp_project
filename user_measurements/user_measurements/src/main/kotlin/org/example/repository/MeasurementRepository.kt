@@ -18,7 +18,9 @@ class MeasurementRepository {
                 statement.executeQuery().use { resultSet ->
                     if (resultSet.next()) {
                         return MeasurementsResponse(
+                            gender = resultSet.getString("gender"),
                             weight = resultSet.getFloat("weight"),
+                            height = resultSet.getFloat("height"),
                             waist = resultSet.getFloat("waist"),
                             hips = resultSet.getFloat("hips"),
                             chest = resultSet.getFloat("chest"),
@@ -36,7 +38,9 @@ class MeasurementRepository {
         }
 
         return MeasurementsResponse(
+            gender = "",
             weight = 0f,
+            height = 0f,
             waist = 0f,
             hips = 0f,
             chest = 0f,
@@ -50,8 +54,16 @@ class MeasurementRepository {
         )
     }
 
+    fun updateGender(username: String, updateGenderRequest: UpdateGenderRequest): MeasurementsResponse {
+        return updateMeasurement(username, "gender", updateGenderRequest.gender)
+    }
+
     fun updateWeight(username: String, updateWeightRequest: UpdateWeightRequest): MeasurementsResponse {
         return updateMeasurement(username, "weight", updateWeightRequest.weight)
+    }
+
+    fun updateHeight(username: String, updateHeightRequest: UpdateHeightRequest): MeasurementsResponse {
+        return updateMeasurement(username, "height", updateHeightRequest.height)
     }
 
     fun updateWaist(username: String, updateWaistRequest: UpdateWaistRequest): MeasurementsResponse {
@@ -99,6 +111,7 @@ class MeasurementRepository {
                 when (value) {
                     is Float -> updateStmt.setFloat(1, value)
                     is Int -> updateStmt.setInt(1, value)
+                    is String -> updateStmt.setString(1, value)
                 }
                 updateStmt.setTimestamp(2, todayDate)
                 updateStmt.setString(3, username)
@@ -112,6 +125,7 @@ class MeasurementRepository {
                         when (value) {
                             is Float -> insertStmt.setFloat(2, value)
                             is Int -> insertStmt.setInt(2, value)
+                            is String -> insertStmt.setString(2, value)
                         }
                         insertStmt.setString(1, username)
                         insertStmt.setTimestamp(3, todayDate)
