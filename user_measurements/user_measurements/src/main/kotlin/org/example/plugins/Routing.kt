@@ -37,6 +37,22 @@ fun Application.configureRouting() {
             }
         }
 
+        post("/update-gender") {
+            val username = call.request.headers["X-User-ID"] ?: run {
+                call.respond(HttpStatusCode.BadRequest, ErrorResponse("Missing X-User-ID header"))
+                return@post
+            }
+
+            val request = call.receive<UpdateGenderRequest>()
+
+            try {
+                val updatedMeasurements = measurementService.updateGender(username, request)
+                call.respond(HttpStatusCode.OK, updatedMeasurements)
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Failed to update gender: ${e.javaClass.name} - ${e.message} ${username} ${request.gender}"))
+            }
+        }
+
         post("/update-weight") {
             val username = call.request.headers["X-User-ID"] ?: run {
                 call.respond(HttpStatusCode.BadRequest, ErrorResponse("Missing X-User-ID header"))
@@ -50,6 +66,22 @@ fun Application.configureRouting() {
                 call.respond(HttpStatusCode.OK, updatedMeasurements)
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Failed to update weight: ${e.message}"))
+            }
+        }
+
+        post("/update-height") {
+            val username = call.request.headers["X-User-ID"] ?: run {
+                call.respond(HttpStatusCode.BadRequest, ErrorResponse("Missing X-User-ID header"))
+                return@post
+            }
+
+            val request = call.receive<UpdateHeightRequest>()
+
+            try {
+                val updatedMeasurements = measurementService.updateHeight(username, request)
+                call.respond(HttpStatusCode.OK, updatedMeasurements)
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Failed to update height: ${e.message}"))
             }
         }
 
